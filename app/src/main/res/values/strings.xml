@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Capfy</string>
+    <string name="title_activity_home_page">Capfy</string>
+    <string name="title_home">Disponíveis</string>
+    <string name="title_dashboard">Chat</string>
+    <string name="title_notifications">Configurações</string>
+</resources>

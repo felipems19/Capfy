@@ -1,0 +1,132 @@
+package capfy.fragments;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaRecorder;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.SystemClock;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+
+import capfy.threads.ClienteEnviarAudio;
+import felipems.capfy.R;
+
+public class ConversationFragment extends Fragment {
+
+    ImageView fotoContato;
+    ImageButton fotoBotaoAudio;
+    TextView nomeContato, statusDoContato;
+    private MediaRecorder mediaGravacao;
+    private View view;
+    private String pathAudioLocal;
+    private String ipContato;
+    private long tStart, tEnd, tempoDecorrido;
+
+
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        pathAudioLocal = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Capfy/Audios/audioGravadoLocalmente.mp3";
+
+
+    }
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_conversation, container, false);
+
+        fotoContato = (ImageView) view.findViewById(R.id.fotoContato);
+        fotoBotaoAudio = (ImageButton) view.findViewById(R.id.botaoAudio);
+        nomeContato = (TextView) view.findViewById(R.id.nomeContato);
+        statusDoContato = (TextView) view.findViewById(R.id.statusContato);
+
+        fotoBotaoAudio.setOnTouchListener(Objgravacao);
+
+
+        Bundle valoresRecebidos = getArguments();
+        if (valoresRecebidos != null) {
+            nomeContato.setText(valoresRecebidos.getString("nome"));
+
+            statusDoContato.setText(valoresRecebidos.getString("status"));
+
+            File imgFile = new File(valoresRecebidos.getString("foto"));
+            if (imgFile.exists()) {
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                fotoContato.setImageBitmap(myBitmap);
+            }
+            ipContato = valoresRecebidos.getString("ip");
+        }
+        return view;
+    }
+
+
+    private View.OnTouchListener Objgravacao = new View.OnTouchListener() {
+        @Override
+
+        public boolean onTouch(View v, MotionEvent event) {
+            if(v.getId() == R.id.botaoAudio){
+                if(!nomeContato.getText().toString().equals("")) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        startRecording();
+                        return true;
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        tEnd = System.nanoTime();
+                        tempoDecorrido = tEnd - tStart;
+                        if (TimeUnit.NANOSECONDS.toMillis(tempoDecorrido) >= 500) stopRecording();
+                        else mediaGravacao.reset();
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+    };
+
+    protected void startRecording() {
+
+        mediaGravacao = new MediaRecorder();
+        mediaGravacao.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaGravacao.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaGravacao.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mediaGravacao.setOutputFile(pathAudioLocal);
+
+        try {
+            mediaGravacao.prepare();
+            mediaGravacao.start();
+            tStart = System.nanoTime();
+        } catch (IllegalStateException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        Toast.makeText(view.getContext(), "Gravacao Iniciada", Toast.LENGTH_SHORT).show();
+
+    }
+
+    protected void stopRecording() {
+        mediaGravacao.stop();
+        mediaGravacao.release();
+        mediaGravacao = null;
+
+        Thread cThread = new Thread(new ClienteEnviarAudio(ipContato, pathAudioLocal));
+        cThread.start();
+
+        Toast.makeText(view.getContext(), "Gravacao Terminada com sucesso",Toast.LENGTH_SHORT).show();
+
+    }
+
+
+}
