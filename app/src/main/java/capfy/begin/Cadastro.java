@@ -127,6 +127,19 @@ public class Cadastro extends AppCompatActivity {
                     }
 
 
+                    String nomeArquivoStatus = "profileStatus";
+                    String conteudoStatus = "Disponivel";
+
+                    FileOutputStream outputStreamStatus = null;
+                    try {
+                        outputStreamStatus = openFileOutput(nomeArquivoStatus, Context.MODE_PRIVATE);
+                        outputStreamStatus.write(conteudoStatus.getBytes());
+                        outputStreamStatus.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                    }
+
 
                     IFoto.setDrawingCacheEnabled(true);
                     Bitmap bitmap = IFoto.getDrawingCache();
