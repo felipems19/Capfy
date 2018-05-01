@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -87,7 +88,7 @@ public class usersConnectedFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_users_connected,container,false);
         mGridView = (GridView) view.findViewById(R.id.gridview);
 
@@ -115,6 +116,31 @@ public class usersConnectedFragment extends Fragment {
                 variaveisParaEnviar.putString("ip", ipEnvia);
                 variaveisParaEnviar.putString("foto", fotoEnvia);
                 variaveisParaEnviar.putString("status", statusEnvia);
+
+
+                String fileName = "todosOsDadosContato";
+                String[] arrayDeDadosContato = new String[4];
+                arrayDeDadosContato[0] = nomeEnvia;
+                arrayDeDadosContato[1] = ipEnvia;
+                arrayDeDadosContato[2] = fotoEnvia;
+                arrayDeDadosContato[3] = statusEnvia;
+
+                FileOutputStream outputStream = null;
+                try {
+                    outputStream = contexto.openFileOutput(fileName, contexto.MODE_PRIVATE);
+                    ObjectOutputStream dout = new ObjectOutputStream(outputStream);
+                    dout.writeObject(arrayDeDadosContato);
+
+                    dout.flush();
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
+
+
+
+
                 fragment.setArguments(variaveisParaEnviar);
 
 

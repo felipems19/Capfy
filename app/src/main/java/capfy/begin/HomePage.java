@@ -10,6 +10,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 import capfy.fragments.ConfiguracoesFragment;
 import capfy.fragments.ConversationFragment;
 import capfy.fragments.usersConnectedFragment;
@@ -23,7 +29,7 @@ public class HomePage extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private Fragment fragment;
     private String nomeRecebidoLogin;
-
+    private static Context contexto;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -48,6 +54,41 @@ public class HomePage extends AppCompatActivity {
                     if (!(currentFragment instanceof ConversationFragment)) {
                         testeDeMudancaFragment = true;
                         fragment = new ConversationFragment();
+
+                        String[] lerDadosDoUltimoContato = null;
+                        FileInputStream inStream = null;
+
+                        try {
+                            inStream = contexto.openFileInput("todosOsDadosContato");
+                            ObjectInputStream din = new ObjectInputStream(inStream);
+                            lerDadosDoUltimoContato = (String[]) din.readObject();
+                            din.close();
+                            inStream.close();
+
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+                        catch (IOException a)
+                        {
+                            a.printStackTrace();
+                        }
+                        catch (ClassNotFoundException z)
+                        {
+                            z.printStackTrace();
+                        }
+
+
+                        if(lerDadosDoUltimoContato != null) {
+
+                            Bundle variaveisParaEnviar = new Bundle();
+                            variaveisParaEnviar.putString("nome", lerDadosDoUltimoContato[0]);
+                            variaveisParaEnviar.putString("ip", lerDadosDoUltimoContato[1]);
+                            variaveisParaEnviar.putString("foto", lerDadosDoUltimoContato[2]);
+                            variaveisParaEnviar.putString("status", lerDadosDoUltimoContato[3]);
+
+                            fragment.setArguments(variaveisParaEnviar);
+                        }
                     }
                     break;
                 case R.id.navigation_notifications:
@@ -79,6 +120,7 @@ public class HomePage extends AppCompatActivity {
         ft.replace(R.id.main_container, fragmentInicial);
         ft.commit();
 
+        contexto = getApplication();
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

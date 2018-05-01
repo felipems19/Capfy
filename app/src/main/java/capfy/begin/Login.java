@@ -40,7 +40,6 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         //------------------------------------------------
         //Declaração dos elementos e seus respectivos ID's
 
@@ -90,6 +89,15 @@ public class Login extends AppCompatActivity {
 
             CarregarImagemDaMemoriaInterna(context,firstPartName);
         }
+
+
+        //-------------------------------------------------------------------
+        //O codigo abaixo é para esvaziar o cache de uma antiga utilização do APP quanto ao contato corrente de conversa
+
+        File arquivoDadosContato = new File(this.getFilesDir(), "todosOsDadosContato");
+        if (arquivoDadosContato.exists()) this.deleteFile("todosOsDadosContato");
+
+
     }
 
 
@@ -118,7 +126,6 @@ public class Login extends AppCompatActivity {
             }
         }
     };
-
 
 
     //-------------------------------------------------------
