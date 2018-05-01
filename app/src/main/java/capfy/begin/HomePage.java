@@ -29,27 +29,40 @@ public class HomePage extends AppCompatActivity {
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
+
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_container);
+            Boolean testeDeMudancaFragment = false;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     //mTextMessage.setText(R.string.title_home);
-                    fragment = new usersConnectedFragment();
+                    if (!(currentFragment instanceof usersConnectedFragment)) {
+                        testeDeMudancaFragment = true;
+                        fragment = new usersConnectedFragment();
+                    }
                     break;
 
                 case R.id.navigation_dashboard:
                     //mTextMessage.setText(R.string.title_dashboard);
-                    fragment = new ConversationFragment();
+                    if (!(currentFragment instanceof ConversationFragment)) {
+                        testeDeMudancaFragment = true;
+                        fragment = new ConversationFragment();
+                    }
                     break;
                 case R.id.navigation_notifications:
                     //mTextMessage.setText(R.string.title_notifications);
-                    fragment = new ConfiguracoesFragment();
+                    if (!(currentFragment instanceof ConfiguracoesFragment)) {
+                        testeDeMudancaFragment = true;
+                        fragment = new ConfiguracoesFragment();
+                    }
                     break;
             }
-            final FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.main_container, fragment).commit();
+            //final FragmentTransaction transaction = fragmentManager.beginTransaction();
+            //transaction.replace(R.id.main_container, fragment).commit();
+            if(testeDeMudancaFragment == true) getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment, "TAG").commit();
             return true;
+
 
             //return false;
         }

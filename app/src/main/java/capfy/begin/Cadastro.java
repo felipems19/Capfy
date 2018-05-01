@@ -68,8 +68,6 @@ public class Cadastro extends AppCompatActivity {
         rootDirectoty = new File(Environment.getExternalStorageDirectory()+ File.separator + "Capfy");
         if(!rootDirectoty.exists()) rootDirectoty.mkdirs();
 
-        contatosDirectory = new File(Environment.getExternalStorageDirectory()+File.separator +"Capfy", "Contatos");
-        if(!contatosDirectory.exists()) contatosDirectory.mkdirs();
 
         contatosDirectory = new File(Environment.getExternalStorageDirectory()+File.separator +"Capfy", "Audios");
         if(!contatosDirectory.exists()) contatosDirectory.mkdirs();

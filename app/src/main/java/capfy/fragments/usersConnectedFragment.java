@@ -60,7 +60,6 @@ public class usersConnectedFragment extends Fragment {
 
     public static String nomeArquivo = "";
     public static InputStream inFotoRecebida;
-    public static OutputStream outFotoEscrita;
 
 
     private Fragment fragment;
@@ -69,7 +68,7 @@ public class usersConnectedFragment extends Fragment {
 
     private ProgressBar loading;
 
-
+    private static Context contexto;
 
 
     public usersConnectedFragment() {
@@ -98,7 +97,7 @@ public class usersConnectedFragment extends Fragment {
         loading = (ProgressBar) view.findViewById(R.id.progresso);
         loading.setIndeterminate(true);
 
-
+        contexto = getActivity();
 
 
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -237,22 +236,32 @@ public class usersConnectedFragment extends Fragment {
                             String statusDoUsuarioRecebido = divisorDeDadosNomeEStatus[1];
 
 
-                            outFotoEscrita = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Capfy/Contatos/" + nomeDaFotoRecebida); //nao foi colocado o .jpg para nao aparecer na galeria
-                            byte[] buffer = new byte[1024]; //valor minimo de bytes -> Reads up to len bytes of data from the input stream into an array of bytes. An attempt is made to read as many as len bytes, but a smaller number may be read. The number of bytes actually read is returned as an integer. […]
 
-                            int bytesRead;
-                            long size = in.readLong();
-                            while (size > 0 && (bytesRead = in.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
-                                outFotoEscrita.write(buffer, 0, bytesRead);
-                                size -= bytesRead;
+
+
+                            FileOutputStream outputStreamFotoRecebida = null;
+                            try {
+                                outputStreamFotoRecebida = contexto.openFileOutput(nomeDaFotoRecebida, contexto.MODE_PRIVATE);
+                                byte[] buffer = new byte[1024]; //valor minimo de bytes -> Reads up to len bytes of data from the input stream into an array of bytes. An attempt is made to read as many as len bytes, but a smaller number may be read. The number of bytes actually read is returned as an integer. […]
+
+                                int bytesRead;
+                                long size = in.readLong();
+                                while (size > 0 && (bytesRead = in.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
+                                    outputStreamFotoRecebida.write(buffer, 0, bytesRead);
+                                    size -= bytesRead;
+                                }
+                                outputStreamFotoRecebida.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+
                             }
 
-                            outFotoEscrita.close();
+
                             inFotoRecebida.close();
                             socketRecebeFoto.close();
 
 
-                            File fotoDoContato = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Capfy/Contatos/" + nomeDaFotoRecebida);
+                            File fotoDoContato = new File(contexto.getFilesDir(), nomeDaFotoRecebida);
                             items.add(new Item(nomeDaFotoRecebida, fotoDoContato, ip,statusDoUsuarioRecebido));
 
                             return true;
@@ -267,6 +276,9 @@ public class usersConnectedFragment extends Fragment {
                         if (items.get(aux).ip.equals(ip))
                         {
                             items.remove(aux);
+
+                            File fotoParaTestarExistencia = new File(contexto.getFilesDir(), items.get(aux).descricao);
+                            if (fotoParaTestarExistencia.exists()) contexto.deleteFile(items.get(aux).descricao);
                             //items.remove(new Item(items.get(aux).descricao, items.get(aux).fotoContato, ip));
                             testeExistenciaIP = false;
                         }
