@@ -264,7 +264,6 @@ public class usersConnectedFragment extends Fragment {
 
 
 
-
                             FileOutputStream outputStreamFotoRecebida = null;
                             try {
                                 outputStreamFotoRecebida = contexto.openFileOutput(nomeDaFotoRecebida, contexto.MODE_PRIVATE);
@@ -306,6 +305,11 @@ public class usersConnectedFragment extends Fragment {
                             File fotoParaTestarExistencia = new File(contexto.getFilesDir(), items.get(aux).descricao);
                             if (fotoParaTestarExistencia.exists()) contexto.deleteFile(items.get(aux).descricao);
                             //items.remove(new Item(items.get(aux).descricao, items.get(aux).fotoContato, ip));
+
+                            File arquivoDadosContato = new File(contexto.getFilesDir(), "todosOsDadosContato");
+                            if (arquivoDadosContato.exists()) contexto.deleteFile("todosOsDadosContato");
+
+
                             testeExistenciaIP = false;
                         }
                         else testeExistenciaIP = false;

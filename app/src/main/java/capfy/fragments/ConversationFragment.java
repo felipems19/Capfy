@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,14 +27,16 @@ import felipems.capfy.R;
 
 public class ConversationFragment extends Fragment {
 
-    ImageView fotoContato;
+    ImageView fotoDoContato;
     ImageButton fotoBotaoAudio;
-    TextView nomeContato, statusDoContato;
+    TextView nomeDoContato, statusDoContato;
+    private Button bLigar;
     private MediaRecorder mediaGravacao;
     private View view;
-    private String pathAudioLocal;
-    private String ipContato;
+    private String pathAudioLocal,nomeContato, ipContato,fotoContato,statusContato;
+    private int ID;
     private long tStart, tEnd, tempoDecorrido;
+    private Bundle valoresRecebidos;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -46,26 +49,33 @@ public class ConversationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_conversation, container, false);
 
-        fotoContato = (ImageView) view.findViewById(R.id.fotoContato);
+        fotoDoContato = (ImageView) view.findViewById(R.id.fotoContato);
         fotoBotaoAudio = (ImageButton) view.findViewById(R.id.botaoAudio);
-        nomeContato = (TextView) view.findViewById(R.id.nomeContato);
+        nomeDoContato = (TextView) view.findViewById(R.id.nomeContato);
         statusDoContato = (TextView) view.findViewById(R.id.statusContato);
+        bLigar = (Button) view.findViewById(R.id.ligar);
 
         fotoBotaoAudio.setOnTouchListener(Objgravacao);
+        bLigar.setOnTouchListener(Objgravacao);
 
-
-        Bundle valoresRecebidos = getArguments();
+        valoresRecebidos = getArguments();
         if (valoresRecebidos != null) {
-            nomeContato.setText(valoresRecebidos.getString("nome"));
 
-            statusDoContato.setText(valoresRecebidos.getString("status"));
+            nomeContato = valoresRecebidos.getString("nome");
+            ipContato = valoresRecebidos.getString("ip");
+            fotoContato = valoresRecebidos.getString("foto");
+            statusContato = valoresRecebidos.getString("status");
+            ID = 1;
 
-            File imgFile = new File(valoresRecebidos.getString("foto"));
+            nomeDoContato.setText(nomeContato);
+            statusDoContato.setText(statusContato);
+            File imgFile = new File(fotoContato);
+
             if (imgFile.exists()) {
                 Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                fotoContato.setImageBitmap(myBitmap);
+                fotoDoContato.setImageBitmap(myBitmap);
             }
-            ipContato = valoresRecebidos.getString("ip");
+
         }
         return view;
     }
@@ -75,8 +85,19 @@ public class ConversationFragment extends Fragment {
         @Override
 
         public boolean onTouch(View v, MotionEvent event) {
+            if(v.getId() == R.id.ligar){
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    ID = 0;
+                    Thread cThread = new Thread(new ClienteEnviarAudio(pathAudioLocal,ipContato, ID, view.getContext()));
+                    Toast.makeText(view.getContext(), "Fazendo ligacao", Toast.LENGTH_SHORT).show();
+                    cThread.start();
+                    return true;
+                }
+            }
+
+
             if(v.getId() == R.id.botaoAudio){
-                if(!nomeContato.getText().toString().equals("")) {
+                if(!nomeDoContato.getText().toString().equals("")) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
                         startRecording();
                         return true;
@@ -121,7 +142,8 @@ public class ConversationFragment extends Fragment {
         mediaGravacao.release();
         mediaGravacao = null;
 
-        Thread cThread = new Thread(new ClienteEnviarAudio(ipContato, pathAudioLocal));
+        ID = 1;
+        Thread cThread = new Thread(new ClienteEnviarAudio(pathAudioLocal,ipContato,ID, view.getContext()));
         cThread.start();
 
         Toast.makeText(view.getContext(), "Gravacao Terminada com sucesso",Toast.LENGTH_SHORT).show();

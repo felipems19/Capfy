@@ -114,11 +114,39 @@ public class HomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
-        usersConnectedFragment fragmentInicial = new usersConnectedFragment();
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.main_container, fragmentInicial);
-        ft.commit();
+        Intent recebimentoDado = getIntent();
+
+        nomeRecebidoLogin = recebimentoDado.getExtras().getString("nomeUsuario");
+        String escolhaFragmentInicial = recebimentoDado.getExtras().getString("fragmentInicial");
+        String[] vetorDeDadosContato = recebimentoDado.getExtras().getStringArray("dadosContato");
+
+        if (escolhaFragmentInicial.equals("chamarConversation"))
+        {
+            ConversationFragment fragmentChamadoPorNotification = new ConversationFragment();
+
+            Bundle variaveisParaEnviar = new Bundle();
+            variaveisParaEnviar.putString("nome", vetorDeDadosContato[0]);
+            variaveisParaEnviar.putString("ip", vetorDeDadosContato[1]);
+            variaveisParaEnviar.putString("foto", vetorDeDadosContato[2]);
+            variaveisParaEnviar.putString("status", vetorDeDadosContato[3]);
+
+            fragmentChamadoPorNotification.setArguments(variaveisParaEnviar);
+
+
+
+            fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.main_container, fragmentChamadoPorNotification);
+            ft.commit();
+        }
+        else {
+
+            usersConnectedFragment fragmentInicial = new usersConnectedFragment();
+            fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.main_container, fragmentInicial);
+            ft.commit();
+        }
 
         contexto = getApplication();
 
@@ -126,14 +154,11 @@ public class HomePage extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
-        Intent recebimentoDado = getIntent();
-        nomeRecebidoLogin = recebimentoDado.getExtras().getString("nomeUsuario");
-
         Context contextoEnviaParaThread = this;
         Thread serverFotoThread = new Thread(new ServerEnviaFoto(nomeRecebidoLogin, contextoEnviaParaThread));
         serverFotoThread.start();
 
-        Thread sThread = new Thread(new ServerRecebeAudio());
+        Thread sThread = new Thread(new ServerRecebeAudio(contextoEnviaParaThread, this));
         sThread.start();
 
     }

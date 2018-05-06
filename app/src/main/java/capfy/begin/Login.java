@@ -118,7 +118,11 @@ public class Login extends AppCompatActivity {
             {
                 if(usuario != "")
                 {
+                    String[]dados = {};
                     iniciarHomePage.putExtra("nomeUsuario", nomeUsuario.getText().toString());
+                    iniciarHomePage.putExtra("fragmentInicial", "procurarUsuarios");
+                    iniciarHomePage.putExtra("dadosContato",dados);
+
                     startActivity(iniciarHomePage);
                 }
                 else

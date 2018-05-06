@@ -42,34 +42,31 @@ public class ServerEnviaFoto implements Runnable {
                 try{
 
 
-
+                    //Pega dados Referente à foto. Em que o DataInputStream é exatamente o arquivo local. Depois o output vai ser a socket
                     File file = new File(contexto.getFilesDir().getAbsolutePath()+ "/" + nomeDaFotoParaEnviar);
                     byte[] bytes = new byte[(int)file.length()];
 
-
                     FileInputStream fis = new FileInputStream(file);
                     BufferedInputStream bis = new BufferedInputStream(fis);
-
                     DataInputStream dis = new DataInputStream(bis);
                     dis.readFully(bytes, 0, bytes.length);
 
-
-                    //Instrucao para pegar status do usuario
-                    String statusAtualUsuario = new String(BuscarDados(contexto,"profileStatus"));
+                    //------------------------------
 
                     outFoto = sEnviaFoto.getOutputStream();
-
                     DataOutputStream dos = new DataOutputStream(outFoto);
+
+
+                    //Instrucao para pegar status do usuario e enviar por um UTF
+                    String statusAtualUsuario = new String(BuscarDados(contexto,"profileStatus"));
+
                     dos.writeUTF(nomeDaFotoParaEnviar+"<;;>"+statusAtualUsuario);
-                    dos.writeLong(bytes.length);
-                    dos.write(bytes, 0, bytes.length);
+                    dos.writeLong(bytes.length); //pega o tamanho do arquivo e manda
+                    dos.write(bytes, 0, bytes.length); //faz a escrita em si
 
-
-                    dos.flush();
-
-                    outFoto.write(bytes, 0, bytes.length);
-
+                    //outFoto.write(bytes, 0, bytes.length);
                     //outFoto.flush();
+                    dos.flush();
                     outFoto.close();
                     sEnviaFoto.close();
 
