@@ -1,12 +1,16 @@
 package capfy.threads;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
@@ -130,17 +134,41 @@ public class ServerRecebeAudio implements Runnable {
 
                         File caminhoFotoContato = new File(contexto.getFilesDir(), nomeContato);
                         String[] dadosContato = {nomeContato,ipContato,caminhoFotoContato.getPath(),statusContato};
+                        Bitmap bitmap = BitmapFactory.decodeFile(caminhoFotoContato.getPath());
 
-                        NotificationCompat.Builder mBuilder =
-                                new NotificationCompat.Builder(contexto)
-                                        .setSmallIcon(R.mipmap.ic_cf_launcher)
-                                        .setContentTitle(nomeContato + " ligando.")
-                                        .setContentText("Deseja atender?");
-// Creates an explicit intent for an Activity in your app
+                        // Creates an explicit intent for an Activity in your app
                         Intent resultIntent = new Intent(contexto, HomePage.class);
                         resultIntent.putExtra("nomeUsuario", meuNome);
                         resultIntent.putExtra("fragmentInicial", "chamarConversation");
                         resultIntent.putExtra("dadosContato", dadosContato);
+
+                        PendingIntent pit = PendingIntent.getActivity(contexto,0,resultIntent,0);
+                        NotificationCompat.Builder mBuilder;
+
+
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
+                            mBuilder =
+                                    new NotificationCompat.Builder(contexto)
+                                            .setDefaults(Notification.DEFAULT_ALL)
+                                            .setSmallIcon(R.mipmap.ic_cf_launcher)
+                                            .setLargeIcon(bitmap)
+                                            .setContentTitle(nomeContato + " ligando.")
+                                            .setContentText("Deseja atender?")
+                                            .setFullScreenIntent(pit,false)
+                                            .setAutoCancel(true);
+                        } else{
+                            mBuilder =
+                                    new NotificationCompat.Builder(contexto)
+                                            .setDefaults(Notification.DEFAULT_ALL)
+                                            .setSmallIcon(R.mipmap.ic_cf_launcher)
+                                            .setLargeIcon(bitmap)
+                                            .setContentTitle(nomeContato + " ligando.")
+                                            .setContentText("Deseja atender?")
+                                            .setContentIntent(pit)
+                                            .setAutoCancel(true);
+                        }
+
+
 
 // The stack builder object will contain an artificial back stack for the
 // started Activity.
