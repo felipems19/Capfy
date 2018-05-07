@@ -84,7 +84,7 @@
 
     <View
         android:id="@+id/txt_logar"
-        android:layout_width="392dp"
+        android:layout_width="556dp"
         android:layout_height="98dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"

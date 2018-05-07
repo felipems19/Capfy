@@ -110,21 +110,16 @@ public class ServerRecebeAudio implements Runnable {
                             });
                         }
 
-                        parent.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(contexto, "Arquivo Recebido com sucesso", Toast.LENGTH_LONG).show();
-                            }
-                        });
 
                         inputAudioRecebido.close();
                         recebeAudio.close();
 
-
                         parent.runOnUiThread(new Runnable() {
                             public void run() {
-                                Toast.makeText(contexto, "Conexao Fechada", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(contexto, "Ligacao e dados Recebidos com sucesso", Toast.LENGTH_LONG).show();
                             }
                         });
+
 
 
                         String buscarMeuNome = new String(BuscarDados(contexto,"profileData"));
@@ -152,8 +147,10 @@ public class ServerRecebeAudio implements Runnable {
                                             .setDefaults(Notification.DEFAULT_ALL)
                                             .setSmallIcon(R.mipmap.ic_cf_launcher)
                                             .setLargeIcon(bitmap)
-                                            .setContentTitle(nomeContato + " ligando.")
-                                            .setContentText("Deseja atender?")
+                                            .setContentTitle(nomeContato)
+                                            .setContentText("Chamada recebida")
+                                            .addAction(R.drawable.ic_clear_black_24dp, "Cancelar",pit)
+                                            .addAction(R.drawable.ic_call_black_24dp, "Atender", pit)
                                             .setFullScreenIntent(pit,false)
                                             .setAutoCancel(true);
                         } else{

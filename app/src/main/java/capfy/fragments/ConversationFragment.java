@@ -86,12 +86,14 @@ public class ConversationFragment extends Fragment {
 
         public boolean onTouch(View v, MotionEvent event) {
             if(v.getId() == R.id.ligar){
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    ID = 0;
-                    Thread cThread = new Thread(new ClienteEnviarAudio(pathAudioLocal,ipContato, ID, view.getContext()));
-                    Toast.makeText(view.getContext(), "Fazendo ligacao", Toast.LENGTH_SHORT).show();
-                    cThread.start();
-                    return true;
+                if(!nomeDoContato.getText().toString().equals("")) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        ID = 0;
+                        Thread cThread = new Thread(new ClienteEnviarAudio(pathAudioLocal, ipContato, ID, view.getContext()));
+                        Toast.makeText(view.getContext(), "Fazendo ligacao", Toast.LENGTH_SHORT).show();
+                        cThread.start();
+                        return true;
+                    }
                 }
             }
 
