@@ -30,7 +30,7 @@ public class HomePage extends AppCompatActivity {
     private Fragment fragment;
     private String nomeRecebidoLogin;
     private static Context contexto;
-
+    public Thread serverFotoThread,sThread;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -155,13 +155,15 @@ public class HomePage extends AppCompatActivity {
 
 
         Context contextoEnviaParaThread = this;
-        Thread serverFotoThread = new Thread(new ServerEnviaFoto(nomeRecebidoLogin, contextoEnviaParaThread));
+        serverFotoThread = new Thread(new ServerEnviaFoto(nomeRecebidoLogin, contextoEnviaParaThread));
         serverFotoThread.start();
 
-        Thread sThread = new Thread(new ServerRecebeAudio(contextoEnviaParaThread, this));
+        sThread = new Thread(new ServerRecebeAudio(contextoEnviaParaThread, this));
         sThread.start();
 
     }
+
+
 
 
 }

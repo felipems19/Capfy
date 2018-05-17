@@ -19,13 +19,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+
+
+
 import felipems.capfy.R;
 
 public class Cadastro extends AppCompatActivity {
 
     Button bCadastra, bFoto;
     EditText eTNome, eTSenha;
-    CheckBox esconderSenha;
+    CheckBox visualizarSenha;
     ImageView IFoto;
     Intent enviaLogin;
     File rootDirectoty,perfilDirectory,contatosDirectory;
@@ -46,7 +53,7 @@ public class Cadastro extends AppCompatActivity {
         eTNome = (EditText) findViewById(R.id.act_nome);
         eTSenha = (EditText) findViewById(R.id.act_senha);
 
-        esconderSenha = (CheckBox) findViewById(R.id.act_checkBox);
+        visualizarSenha = (CheckBox) findViewById(R.id.act_checkBox);
         IFoto = (ImageView) findViewById(R.id.act_fotoPerfil);
 
         //-------------------------------------------------
@@ -73,6 +80,20 @@ public class Cadastro extends AppCompatActivity {
         if(!contatosDirectory.exists()) contatosDirectory.mkdirs();
         //--------------------------------------------------
 
+
+        visualizarSenha.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // checkbox status is changed from uncheck to checked.
+                if (!isChecked) {
+                    // show password
+                    eTSenha.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                } else {
+                    // hide password
+                    eTSenha.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }
+            }
+        });
 
     }
 

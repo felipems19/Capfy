@@ -21,6 +21,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="capfy.begin.Login"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
             <intent-filter>

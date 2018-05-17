@@ -107,7 +107,7 @@
         app:srcCompat="@drawable/traco" />
 
     <View
-        android:id="@+id/view"
+        android:id="@+id/viewSair"
         android:layout_width="104dp"
         android:layout_height="57dp"
         android:layout_marginBottom="4dp"
